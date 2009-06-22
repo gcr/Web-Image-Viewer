@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux/x86 (vers 7 December 2008), see www.w3.org" />
+
+  <title>Web Browser Image Viewer</title>
+  <link type="text/css" href="css/custom-theme/jquery-ui-1.7.2.custom.css" rel="Stylesheet" />
+  <script type="text/javascript" src="jquery-1.3.2.js"></script>
+  <script type="text/javascript" src="jquery-ui-1.7.2.custom.min.js"></script>
+  <script type="text/javascript" src="farbtastic/farbtastic.js"></script>
+  <link rel="stylesheet" href="farbtastic/farbtastic.css" type="text/css" />
+  <script type="text/javascript">
+// jQuery mousewheel support
+// Thanks to:
+// http://github.com/brandonaaron/jquery-mousewheel/blob/b7c35896a59d0d7054e401f87743f161e66f7a1f/jquery.mousewheel.js
+  (function($) {
+ 
+var types = ['DOMMouseScroll', 'mousewheel'];
+ 
+$.event.special.mousewheel = {
+  setup: function() {
+    if ( this.addEventListener )
+      for ( var i=types.length; i; )
+        this.addEventListener( types[--i], handler, false );
+    else
+      this.onmousewheel = handler;
+  },
+  
+  teardown: function() {
+    if ( this.removeEventListener )
+      for ( var i=types.length; i; )
+        this.removeEventListener( types[--i], handler, false );
+    else
+      this.onmousewheel = null;
+  }
+};
+ 
+$.fn.extend({
+  mousewheel: function(fn) {
+    return fn ? this.bind("mousewheel", fn) : this.trigger("mousewheel");
+  },
+  
+  unmousewheel: function(fn) {
+    return this.unbind("mousewheel", fn);
+  }
+});
+ 
+ 
+function handler(event) {
+  var args = [].slice.call( arguments, 1 ), delta = 0, returnValue = true;
+  
+  event = $.event.fix(event || window.event);
+  event.type = "mousewheel";
+  
+  if ( event.wheelDelta ) delta = event.wheelDelta/120;
+  if ( event.detail ) delta = -event.detail/3;
+  
+  // Add events and delta to the front of the arguments
+  args.unshift(event, delta);
+ 
+  return $.event.handle.apply(this, args);
+}
+ 
+})(jQuery);
+
+//
+//
+//
+// My code
+//
+//
+//
+
+  function center_this(obj) {
+    var winH = $(document).height();
+    var winW = $(document).width();
+    obj.css('top', winH/2-obj.height()/2);
+    obj.css('left', winW/2-obj.width()/2);
+  }
+  
+  function reset_image() {
+    img = $("#dragimg");
+    img.height("auto");
+    img.width("auto");
+    center_this(img);
+  }
+  
+  function zoom_in(x, y) {
+    if (!x) {
+        x = $(document).width() / 2;
+    }
+    if (!y) {
+        y = $(document).height() / 2;
+    }
+    img = $("#dragimg");
+    left = parseInt(img.css("left"));
+    top = parseInt(img.css("top"));
+    img.css("left", x-(x-left)*1.25);
+    img.css("top", y-(y-top)*1.25);
+    img.height(img.height() * 1.25);
+  }
+
+  function zoom_out(x,y) {
+    if (!x) {
+        x = $(document).width() / 2;
+    }
+    if (!y) {
+        y = $(document).height() / 2;
+    }
+    img = $("#dragimg");
+    left = parseInt(img.css("left"));
+    top = parseInt(img.css("top"));
+    img.css("left", x-(x-left)*0.8);
+    img.css("top", y-(y-top)*0.8);
+    img.height(img.height() * 0.8);
+  }
+  
+  function change_image(new_url) {
+    img = $("#dragimg");
+    img.attr("src", new_url);
+//    reset_image();
+  }
+    
+  $(document).ready(function() {
+    $(".tb-button").hover(
+    	function(){ 
+    		$(this).addClass("ui-state-hover"); 
+    	},
+    	function(){ 
+    		$(this).removeClass("ui-state-hover"); 
+    	}
+    );
+    
+    $("#dragimg").draggable();
+    
+    $("#urlpicker").change(function() {
+        change_image($(this).val());
+    });
+
+    $("#urlpicker").keyup(function() {
+        change_image($(this).val());
+    });
+    
+    $("#zoomnorm").click(function() {
+        reset_image();
+    });
+    
+    $("#zoomin").click(function() {
+        zoom_in();
+    });
+    
+    $("#zoomout").click(function() {
+        zoom_out();
+    });
+
+    $('#dragimg').load(function(){
+      reset_image();
+    });
+    
+    $(document).mousewheel(function(ev, delta) {
+        if (delta >= 0) {
+            zoom_in(ev.pageX, ev.pageY);
+        } else {
+            zoom_out(ev.pageX, ev.pageY);
+        }
+    });
+    
+    var fbcolorpicker = $.farbtastic("#fb-colorpicker", function() {
+        $("body").css("background-color", this.color);
+        $("#colorpicker").val(this.color);
+    });
+    
+    $("#colorpicker").keyup(function() {
+        fbcolorpicker.setColor($(this).val());
+    });
+    $("#colorpicker").change(function() {
+        $("#colorpicker").keyup();
+    });
+    fbcolorpicker.setColor("#fff");
+  });
+  </script>
+  <style type="text/css">
+    body {
+        margin: 0px;
+        padding: 0px;
+    }
+    
+    .toolbar {
+        position: fixed;
+        top: 1em;
+        right: 1em;
+        padding: 0.4em;
+        display: block;
+        float: left;
+    }
+    .toolbar .tb-buttonset {
+        margin-right: 1em;
+    }
+    
+    li {
+        list-style-image:none;
+        list-style-position:outside;
+        list-style-type:none;
+    }
+    
+    
+    .tb-button { 
+       outline: 0;
+       margin: 0 4px 0 0; 
+       padding: .4em 1em; 
+       text-decoration:none !important; 
+       cursor: pointer; 
+       position: relative; 
+       text-align: center; 
+       zoom: 1; 
+    }
+    .tb-button .ui-icon {
+        float: left
+    }
+    
+    .tb-buttonset {
+        float: left;
+    }
+    .tb-buttonset .tb-button {
+        float: left;
+        padding-right: -1px;
+        margin-right: -1px;
+    }
+    
+    #colorpicker {
+        width: 5em;
+    }
+    
+    #dragimg {
+        position: fixed;
+        cursor: move;
+    }
+    
+    #fb-colorpicker  {
+        position: fixed;
+        top: 5em;
+        right: 1em;
+  </style>
+</head>
+
+<body>
+    <img src="http://upload.wikimedia.org/wikipedia/en/b/bc/Wiki.png" id="dragimg">
+    <div class="toolbar ui-corner-all ui-widget-header">
+        <div class="tb-buttonset">
+            <input class="ui-corner-all ui-widget-content" type="text" id="urlpicker" value="URL..."></input>
+        </div>
+        <div class="tb-buttonset">
+        
+            <a class="tb-button ui-state-default ui-corner-left" id="zoomin">
+                <span class="tb-icon ui-icon ui-icon-zoomin"></span>
+            </a>
+            
+            <a class="tb-button ui-state-default" id="zoomout">
+                <span class="ui-icon ui-icon-zoomout"></span>
+            </a>
+            
+            <a class="tb-button ui-state-default ui-corner-right" id="zoomnorm">
+                <span class="ui-icon ui-icon-arrow-4-diag"></span>
+            </a>
+            
+        </div>
+        <div class="tb-buttonset">
+            <input href="#" class="ui-corner-all ui-widget-content" type="text" id="colorpicker" value="#fff"></input>
+        </div>
+    </div>
+    <div class="ui-corner-all ui-widget-content" id="fb-colorpicker"></div>
+</body>
+</html>
+

@@ -82,7 +82,7 @@ function handler(event) {
   }
   
   function reset_image() {
-    img = $("#dragimg");
+    var img = $("#dragimg");
     img.height("auto");
     img.width("auto");
     center_this(img);
@@ -90,14 +90,14 @@ function handler(event) {
   
   function zoom_in(x, y) {
     if (!x) {
-        x = $(document).width() / 2;
+        var x = $(document).width() / 2;
     }
     if (!y) {
-        y = $(document).height() / 2;
+        var y = $(document).height() / 2;
     }
-    img = $("#dragimg");
-    left = parseInt(img.css("left"));
-    top = parseInt(img.css("top"));
+    var img = $("#dragimg");
+    var left = parseInt(img.css("left"));
+    var top = parseInt(img.css("top"));
     img.css("left", x-(x-left)*1.25);
     img.css("top", y-(y-top)*1.25);
     img.height(img.height() * 1.25);
@@ -105,21 +105,25 @@ function handler(event) {
 
   function zoom_out(x,y) {
     if (!x) {
-        x = $(document).width() / 2;
+        var x = $(document).width() / 2;
     }
     if (!y) {
-        y = $(document).height() / 2;
+        var y = $(document).height() / 2;
     }
-    img = $("#dragimg");
-    left = parseInt(img.css("left"));
-    top = parseInt(img.css("top"));
+    var img = $("#dragimg");
+    var left = parseInt(img.css("left"));
+    var top = parseInt(img.css("top"));
+    console.log("Left is " + left);
+    console.log("Top is " + img.css("top"));
+    console.log("Top is " + parseInt(img.css("top")));
+    console.log("Top is " + top);
     img.css("left", x-(x-left)*0.8);
     img.css("top", y-(y-top)*0.8);
     img.height(img.height() * 0.8);
   }
   
   function change_image(new_url) {
-    img = $("#dragimg");
+    var img = $("#dragimg");
     img.attr("src", new_url);
 //    reset_image();
   }
@@ -243,6 +247,7 @@ function handler(event) {
         position: fixed;
         top: 5em;
         right: 1em;
+    }
   </style>
 </head>
 
